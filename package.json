@@ -28,6 +28,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"heroicons-svelte": "^2.0.0"
+		"heroicons-svelte": "^2.0.0",
+		"svelte-youtube": "^0.0.2"
 	}
 }

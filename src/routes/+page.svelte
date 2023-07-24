@@ -2,23 +2,28 @@
   import screenPlaceholderImg from "$lib/images/success.png";
   //import {YOUTUBE_API_KEY} from '$env/static/private';
   import Modal from "$lib/components/Modal.svelte";
+  import YouTube from "svelte-youtube";
 
   let TUBE_API_KEY = "AIzaSyCSis_YjZDjyGgNvXSZPaYiZ-3oZ165SNo";
   let term = "";
   let selection = "";
-  let result_sizes = [
-    { id: 1, size: "25" },
-    { id: 2, size: "15" },
-    { id: 3, size: "10" },
-    { id: 4, size: "5" },
-  ];
+
   let s = ["25", "15", "10", "5"];
   let max_result = s[0];
-  // let selected_size = '';
-  // max_result = selected_size;
+
   let response;
   let data: any;
   let showModal = false;
+  let idVid: string;
+
+  const handleVideoLaunch = (v: string) => {
+    showModal = true;
+    idVid = v;
+  };
+
+  const options = {
+    width: "390",
+  };
 
   const getData = async () => {
     const res = await fetch(
@@ -89,15 +94,15 @@
         class="w-full outline-none placeholder-gray-400 text-gray-800"
         type="text"
         maxlength={25}
-        placeholder="Search..(max 25 characters)"
+        placeholder="Search (max. 25 characters)"
         bind:value={term}
       />
     </form>
     {#if data}
       <div>
         <p class="text-slate-400 text-sm mt-2">
-          Showing {max_result} results for
-          <span class="font-semibold text-lg">{selection}</span>.
+          Showing {max_result} random videos of {" "}
+          <span class="font-semibold text-lg">{selection}</span>
         </p>
       </div>
     {/if}
@@ -121,46 +126,30 @@
   </div>
 </div>
 
+<Modal bind:showModal>
+  <!-- <h2 slot="header">Video of selection</h2> -->
+  <div class="grid grid-cols-1 h-full w-full md:grid-cols-3 md:h-full gap-3">
+    <aside
+      class="bg-orange-400 h-64 w-full rounded-md items-center justify-center md:h-full overflow-y-auto"
+    >
+      <p>Transcript Section</p>
+    </aside>
+    <div class="md:col-span-2 md:w-full h-full rounded-md">
+      <YouTube videoId={idVid} {options} class="w-64 md:w-full" />
+    </div>
+  </div>
+</Modal>
+
 {#if data}
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 pt-4">
     {#each data.items as item}
-      <Modal bind:showModal>
-        <h2 slot="header">Video of selection</h2>
-        <div class="grid grid-cols-1 h-full md:grid-cols-3 md:h-full gap-3">
-          <video class="md:col-span-2 w-full h-72" controls muted>
-            <source
-              src={`https://www.youtube.com/watch?v=${item.id.videoId}`}
-              type="video/mp4"
-            />
-            <track kind="captions" />
-          </video>
-          <!-- <video
-			class="md:col-span-2 w-full h-72"
-			controls
-			autoplay
-			muted
-			src="https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4"
-			poster="https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217"
-		  >
-			<track kind="captions" />
-			Sorry, your browser doesn't support embedded videos, but don't worry, you can
-			<a href="https://archive.org/details/BigBuckBunny_124">download it</a>
-			and watch it with your favorite video player!
-		  </video> -->
-          <aside
-            class="bg-orange-400 h-64 rounded-md items-center justify-center md:h-full overflow-y-auto"
-          >
-            <p>Transcript Section</p>
-          </aside>
-        </div>
-      </Modal>
       <!-- <a
 				href={`https://www.youtube.com/watch?v=${item.id.videoId}`}
 				target="_blank"
 				rel="noreferrer"
 			> -->
       <!-- svelte-ignore a11y-invalid-attribute -->
-      <a href="#" on:click={() => (showModal = true)}>
+      <a href="#" on:click={() => handleVideoLaunch(item.id.videoId)}>
         <div class="w-full h-full transition-all group duration-200 rounded-lg">
           <div
             class="overflow-hidden shadow-md hover:shadow-lg relative rounded-md h-full flex-col flex justify-center"
