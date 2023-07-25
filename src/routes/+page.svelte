@@ -4,7 +4,6 @@
 
   import Modal from "$lib/components/Modal.svelte";
   import Youtube from "svelte-youtube-embed";
-  // import { YoutubeTranscript } from "youtube-transcript";
 
   import { tomcruise } from "$lib/dummy-data";
 
@@ -21,15 +20,12 @@
   let idVid: string;
   let trans_example = "";
   let asideLabel = "";
-  // const dummyText = `
-  //       So, async ensures that the function returns a promise, and wraps non-promises in it. Simple enough, right? But not only that. There’s another keyword, await, that works only inside async functions, and it’s pretty cool.
-  //       `;
+
   const dummyText = tomcruise;
   $: str = dummyText.split("");
 
   function typer() {
     const interval = setInterval(() => {
-      //  document.write(str[0]);
       trans_example += str[0];
       str = str.slice(1);
 
@@ -137,7 +133,7 @@
         bind:value={term}
       />
     </form>
-    {#if data}
+    {#if data && term.length < 1}
       <div>
         <p class="text-slate-400 text-sm mt-2">
           Showing {max_result} random videos for {" "}
@@ -145,7 +141,7 @@
         </p>
       </div>
     {/if}
-    {#if term && !data}
+    {#if term || term.length > 0}
       <div class="p-2">
         <span class="text-sm text-slate-600"
           >Show{" "}
