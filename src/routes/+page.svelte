@@ -7,7 +7,7 @@
 
   import { tomcruise } from "$lib/dummy-data";
 
-  let TUBE_API_KEY = "AIzaSyCSis_YjZDjyGgNvXSZPaYiZ-3oZ165SNo";
+  let TUBE_API_KEY = "";
   let term = "";
   let selection = "";
 
