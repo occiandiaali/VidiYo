@@ -1,8 +1,10 @@
 <script lang="ts">
   import screenPlaceholderImg from "$lib/images/success.png";
   //import {YOUTUBE_API_KEY} from '$env/static/private';
+  import { ExtractSS } from "$lib/ExtractSubstring";
   import Modal from "$lib/components/Modal.svelte";
-  import YouTube from "svelte-youtube";
+  import Youtube from "svelte-youtube-embed";
+  import { YTTranscript } from "$lib/TranscribeVideo";
 
   let TUBE_API_KEY = "AIzaSyCSis_YjZDjyGgNvXSZPaYiZ-3oZ165SNo";
   let term = "";
@@ -15,10 +17,25 @@
   let data: any;
   let showModal = false;
   let idVid: string;
+  let trans_example = "";
+
+  function resolveAfter20Seconds(v: string) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(YTTranscript(v));
+      }, 20000);
+    });
+  }
+
+  async function asyncCall(s: string) {
+    await resolveAfter20Seconds(s);
+  }
 
   const handleVideoLaunch = (v: string) => {
     showModal = true;
     idVid = v;
+    const r = asyncCall(idVid);
+    console.log("RTT: ", r);
   };
 
   const options = {
@@ -63,7 +80,7 @@
       Search for <a
         href="#"
         style="pointer-events:{term.length > 3 ? 'all' : 'none'}"
-        on:click={() => getData()}
+        on:click={getData}
         class="text-orange-700 mr-8 text-xl md:text-2xl font-semibold pl-1 pt-0.5 {term &&
           'absolute z-10 animate-pulse'}">{term || "Unknown"}</a
       >
@@ -101,8 +118,8 @@
     {#if data}
       <div>
         <p class="text-slate-400 text-sm mt-2">
-          Showing {max_result} random videos of {" "}
-          <span class="font-semibold text-lg">{selection}</span>
+          Showing {max_result} random videos for {" "}
+          <span class="font-semibold text-lg">"{selection}"</span>
         </p>
       </div>
     {/if}
@@ -132,10 +149,40 @@
     <aside
       class="bg-orange-400 h-64 w-full rounded-md items-center justify-center md:h-full overflow-y-auto"
     >
-      <p>Transcript Section</p>
+      <div
+        class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto"
+      >
+        <svg
+          class="animate-spin h-5 w-5 ml-3 mt-2 from-neutral-700"
+          viewBox="0 0 24 24"
+        />
+        {#if trans_example === ""}
+          <h4 class="text-slate-600 text-lg font-semibold mt-4">
+            Summarising transcript...
+          </h4>
+          <div class="animate-pulse flex space-x-4">
+            <!-- <div class="rounded-full bg-slate-700 h-10 w-10" /> -->
+            <div class="flex-1 space-y-6 py-1">
+              <div class="h-2 bg-slate-400 rounded" />
+              <div class="space-y-3">
+                <div class="grid grid-cols-3 gap-4">
+                  <div class="h-2 bg-slate-400 rounded col-span-2" />
+                  <div class="h-2 bg-slate-400 rounded col-span-1" />
+                </div>
+                <div class="h-2 bg-slate-400 rounded" />
+              </div>
+            </div>
+          </div>
+        {:else}
+          <div class="flex flex-col items-center justify-center p-20">
+            <h4>Transcript Summary</h4>
+            <p>{JSON.stringify(trans_example)}</p>
+          </div>
+        {/if}
+      </div>
     </aside>
     <div class="md:col-span-2 md:w-full h-full rounded-md">
-      <YouTube videoId={idVid} {options} class="w-64 md:w-full" />
+      <Youtube id={idVid} altThumb={true} />
     </div>
   </div>
 </Modal>

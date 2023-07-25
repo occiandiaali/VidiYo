@@ -20,7 +20,9 @@
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div on:click|stopPropagation>
     <!-- svelte-ignore a11y-autofocus -->
-    <button autofocus on:click={() => dialog.close()}>close video</button>
+    <button autofocus on:click={() => dialog.close()} class="mb-10 md:mb-20"
+      >close video</button
+    >
     <!-- <slot name="header" /> -->
     <hr />
     <slot />
