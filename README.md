@@ -1,7 +1,9 @@
 # VidiYo!
 
 A simple SvelteKit project which utilizes Supabase for authentication and database functionalities, 
-YouTube API for accessing public videos, and OpenAI Api for transcription and summarization functionalities on those videos.  
+YouTube API for accessing public videos, and OpenAI Api for transcription and summarization functionalities on those videos. 
+I also intend to utilize Tom-Tom maps for geo-placement information about the videos.  
+
 
 ### !!Notice!!  
 The demo is utilizing dummy-data, due to personal challenges with OpenAI, for (basically) proof-of-concept purposes.  
