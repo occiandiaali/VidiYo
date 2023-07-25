@@ -1,10 +1,12 @@
 <script lang="ts">
   import screenPlaceholderImg from "$lib/images/success.png";
   //import {YOUTUBE_API_KEY} from '$env/static/private';
-  import { ExtractSS } from "$lib/ExtractSubstring";
+
   import Modal from "$lib/components/Modal.svelte";
   import Youtube from "svelte-youtube-embed";
-  import { YTTranscript } from "$lib/TranscribeVideo";
+  // import { YoutubeTranscript } from "youtube-transcript";
+
+  import { tomcruise } from "$lib/dummy-data";
 
   let TUBE_API_KEY = "AIzaSyCSis_YjZDjyGgNvXSZPaYiZ-3oZ165SNo";
   let term = "";
@@ -18,24 +20,44 @@
   let showModal = false;
   let idVid: string;
   let trans_example = "";
+  let asideLabel = "";
+  // const dummyText = `
+  //       So, async ensures that the function returns a promise, and wraps non-promises in it. Simple enough, right? But not only that. There’s another keyword, await, that works only inside async functions, and it’s pretty cool.
+  //       `;
+  const dummyText = tomcruise;
+  $: str = dummyText.split("");
 
-  function resolveAfter20Seconds(v: string) {
+  function typer() {
+    const interval = setInterval(() => {
+      //  document.write(str[0]);
+      trans_example += str[0];
+      str = str.slice(1);
+
+      if (!str.length) {
+        clearInterval(interval);
+      }
+    }, 100);
+  }
+
+  function resolveAfter20Seconds() {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(YTTranscript(v));
-      }, 20000);
+        resolve(trans_example);
+      }, 7000);
     });
   }
 
-  async function asyncCall(s: string) {
-    await resolveAfter20Seconds(s);
+  async function asyncCall() {
+    asideLabel = "Getting summary...";
+    await resolveAfter20Seconds();
+    asideLabel = "Summary";
+    typer();
   }
 
   const handleVideoLaunch = (v: string) => {
     showModal = true;
     idVid = v;
-    const r = asyncCall(idVid);
-    console.log("RTT: ", r);
+    asyncCall();
   };
 
   const options = {
@@ -128,6 +150,7 @@
         <span class="text-sm text-slate-600"
           >Show{" "}
           <select
+            aria-selected="true"
             class="ml-2 mr-2"
             bind:value={max_result}
             on:change={() => console.log(max_result)}
@@ -152,31 +175,32 @@
       <div
         class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto"
       >
-        <svg
-          class="animate-spin h-5 w-5 ml-3 mt-2 from-neutral-700"
-          viewBox="0 0 24 24"
-        />
         {#if trans_example === ""}
-          <h4 class="text-slate-600 text-lg font-semibold mt-4">
-            Summarising transcript...
-          </h4>
+          <h2 class="text-slate-600 text-lg font-semibold mt-1">
+            {asideLabel}
+          </h2>
           <div class="animate-pulse flex space-x-4">
             <!-- <div class="rounded-full bg-slate-700 h-10 w-10" /> -->
             <div class="flex-1 space-y-6 py-1">
-              <div class="h-2 bg-slate-400 rounded" />
+              <div class="h-2 bg-slate-600 rounded" />
               <div class="space-y-3">
                 <div class="grid grid-cols-3 gap-4">
-                  <div class="h-2 bg-slate-400 rounded col-span-2" />
-                  <div class="h-2 bg-slate-400 rounded col-span-1" />
+                  <div class="h-2 bg-slate-600 rounded col-span-2" />
+                  <div class="h-2 bg-slate-600 rounded col-span-1" />
                 </div>
-                <div class="h-2 bg-slate-400 rounded" />
+                <div class="h-2 bg-slate-600 rounded" />
               </div>
             </div>
           </div>
         {:else}
-          <div class="flex flex-col items-center justify-center p-20">
-            <h4>Transcript Summary</h4>
-            <p>{JSON.stringify(trans_example)}</p>
+          <div class="flex flex-col items-center justify-center p-8">
+            <h2 class="text-slate-600 text-lg font-semibold mt-1">
+              {asideLabel}
+            </h2>
+
+            <p>
+              {trans_example}
+            </p>
           </div>
         {/if}
       </div>
@@ -188,7 +212,10 @@
 </Modal>
 
 {#if data}
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 pt-4">
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 pt-4"
+    role="button"
+  >
     {#each data.items as item}
       <!-- <a
 				href={`https://www.youtube.com/watch?v=${item.id.videoId}`}
