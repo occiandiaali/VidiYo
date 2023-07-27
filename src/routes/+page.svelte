@@ -224,6 +224,31 @@
           <div
             class="overflow-hidden shadow-md hover:shadow-lg relative rounded-md h-full flex-col flex justify-center"
           >
+            <span class="relative flex w-6 h-6 mt-6 ml-6">
+              <span
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"
+              />
+              <svg
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="relative inline-flex bg-orange-500 w-6 h-6 rounded-full"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
+                />
+              </svg>
+            </span>
             <img
               src={item.snippet.thumbnails.high.url}
               alt=""
