@@ -12,7 +12,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 <dialog
-  class="h-full rounded-md p-4"
+  class="h-full md:h-auto rounded-md p-0"
   bind:this={dialog}
   on:close={() => (showModal = false)}
   on:click|self={() => dialog.close()}
@@ -20,13 +20,12 @@
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div on:click|stopPropagation>
     <!-- svelte-ignore a11y-autofocus -->
-    <button autofocus on:click={() => dialog.close()} class="mb-10 md:mb-20"
-      >close video</button
+    <button autofocus on:click={() => dialog.close()} class="mb-10 md:mb-14"
+      >Exit</button
     >
     <!-- <slot name="header" /> -->
     <hr />
     <slot />
-    <hr />
   </div>
 </dialog>
 

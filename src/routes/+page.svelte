@@ -6,8 +6,10 @@
   import Youtube from "svelte-youtube-embed";
 
   import { tomcruise } from "$lib/dummy-data";
+  import MapComponent from "$lib/components/MapComponent.svelte";
+  import ModalContentComponent from "$lib/components/ModalContentComponent.svelte";
 
-  let TUBE_API_KEY = "";
+  let TUBE_API_KEY = "AIzaSyCSis_YjZDjyGgNvXSZPaYiZ-3oZ165SNo";
   let term = "";
   let selection = "";
 
@@ -17,9 +19,12 @@
   let response;
   let data: any;
   let showModal = false;
+  let showMapModal = false;
+  let summary = false;
   let idVid: string;
   let trans_example = "";
   let asideLabel = "";
+  let modalView = "";
 
   const dummyText = tomcruise;
   $: str = dummyText.split("");
@@ -35,29 +40,45 @@
     }, 100);
   }
 
-  function resolveAfter20Seconds() {
+  function resolveAfter5Seconds() {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(trans_example);
-      }, 7000);
+      }, 5000);
     });
   }
 
   async function asyncCall() {
-    asideLabel = "Getting summary...";
-    await resolveAfter20Seconds();
+    asideLabel = "Tap the Bot..";
+    summary = !summary;
     asideLabel = "Summary";
+    await resolveAfter5Seconds();
     typer();
   }
 
-  const handleVideoLaunch = (v: string) => {
-    showModal = true;
-    idVid = v;
-    asyncCall();
+  const handleDummyTextDisplay = () => {
+    summary = false;
+    trans_example = "";
   };
 
-  const options = {
-    width: "390",
+  const handleVideoLaunch = (v: string) => {
+    idVid = v;
+    asyncCall();
+    showMapModal = false;
+    showModal = true;
+  };
+  const handleMapLaunch = () => {
+    showMapModal = true;
+    showModal = true;
+  };
+
+  const handleModalAction = (value: string, v = "") => {
+    showModal = true;
+    if (value === "video") {
+      modalView = "video";
+    } else {
+      modalView = "map";
+    }
   };
 
   const getData = async () => {
@@ -163,48 +184,7 @@
 </div>
 
 <Modal bind:showModal>
-  <!-- <h2 slot="header">Video of selection</h2> -->
-  <div class="grid grid-cols-1 h-full w-full md:grid-cols-3 md:h-full gap-3">
-    <aside
-      class="bg-orange-400 h-64 w-full rounded-md items-center justify-center md:h-full overflow-y-auto"
-    >
-      <div
-        class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto"
-      >
-        {#if trans_example === ""}
-          <h2 class="text-slate-600 text-lg font-semibold mt-1">
-            {asideLabel}
-          </h2>
-          <div class="animate-pulse flex space-x-4">
-            <!-- <div class="rounded-full bg-slate-700 h-10 w-10" /> -->
-            <div class="flex-1 space-y-6 py-1">
-              <div class="h-2 bg-slate-600 rounded" />
-              <div class="space-y-3">
-                <div class="grid grid-cols-3 gap-4">
-                  <div class="h-2 bg-slate-600 rounded col-span-2" />
-                  <div class="h-2 bg-slate-600 rounded col-span-1" />
-                </div>
-                <div class="h-2 bg-slate-600 rounded" />
-              </div>
-            </div>
-          </div>
-        {:else}
-          <div class="flex flex-col items-center justify-center p-8">
-            <h2 class="text-slate-600 text-lg font-semibold mt-1">
-              {asideLabel}
-            </h2>
-
-            <p>
-              {trans_example}
-            </p>
-          </div>
-        {/if}
-      </div>
-    </aside>
-    <div class="md:col-span-2 md:w-full h-full rounded-md">
-      <Youtube id={idVid} altThumb={true} />
-    </div>
-  </div>
+  <ModalContentComponent view={modalView} vidId={idVid} />
 </Modal>
 
 {#if data}
@@ -219,17 +199,48 @@
 				rel="noreferrer"
 			> -->
       <!-- svelte-ignore a11y-invalid-attribute -->
-      <a href="#" on:click={() => handleVideoLaunch(item.id.videoId)}>
-        <div class="w-full h-full transition-all group duration-200 rounded-lg">
-          <div
-            class="overflow-hidden shadow-md hover:shadow-lg relative rounded-md h-full flex-col flex justify-center"
+
+      <div class="w-full h-full transition-all group duration-200 rounded-lg">
+        <div
+          class="overflow-hidden shadow-md hover:shadow-lg relative rounded-md h-full flex-col flex justify-center"
+        >
+          <button
+            class="z-30 md:pt-6"
+            on:click={() => handleModalAction("map")}
           >
+            <span class="relative flex w-6 h-6">
+              <span
+                class="animate-ping absolute bottom-0 right-0 inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"
+              />
+              <svg
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="relative inline-flex bg-orange-500 w-6 h-6 rounded-full"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
+                />
+              </svg>
+            </span>
+          </button>
+          <!-- <a href="#" on:click={() => handleVideoLaunch(item.id.videoId)}> -->
+          <a href="#" on:click={() => handleModalAction("video")}>
             <img
               src={item.snippet.thumbnails.high.url}
               alt=""
               class="group-hover:scale-105 group-hover:blur-sm object-cover group-hover:opacity-80 transition-all duration-200"
             />
-
             <div
               class="absolute top-0 p-4 opacity-0 group-hover:opacity-100 transition-all duration-500"
             >
@@ -241,9 +252,9 @@
               </div>
               <div class="">{item.snippet.title}</div>
             </div>
-          </div>
+          </a>
         </div>
-      </a>
+      </div>
     {/each}
   </div>
 {:else}
