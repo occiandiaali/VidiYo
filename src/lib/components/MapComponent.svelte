@@ -1,20 +1,29 @@
-<!-- <div class="grid grid-cols-5 gap-2 p-2 w-full h-60">
-  <div
-    class="bg-orange-400 flex items-center justify-center h-56 overflow-y-auto"
-  >
-    Metadata
-  </div>
-  <div class="col-span-4 bg-orange-300 flex items-center justify-center h-56">
-    Map
-  </div>
-</div> -->
-<div class="grid grid-cols-1 md:grid-cols-5 gap-2 md:h-80">
-  <div
-    class="bg-orange-400 h-64 w-full rounded-md items-center justify-center md:h-80 overflow-y-auto"
-  >
-    Metadata
-  </div>
-  <div class=" bg-orange-300 md:col-span-4 md:w-80 h-full md:h-80 rounded-md">
-    Map
-  </div>
-</div>
+<script lang="ts">
+  import { onMount } from "svelte";
+
+  let map;
+  let mapElement: HTMLDivElement;
+  let zoom = 8;
+  let longitude = 3.2548;
+  let latitude = 6.7633;
+  let t;
+
+  onMount(async () => {
+    t = await import("@tomtom-international/web-sdk-maps");
+    map = t.map({
+      key: "7Ki7uhB3GnitHJCmnCWMiRDAGevgOPOT",
+      container: mapElement,
+      stylesVisibility: {
+        trafficFlow: true,
+      },
+      center: [longitude, latitude],
+      zoom: zoom,
+    });
+    map.addControl(new t.FullscreenControl());
+    map.addControl(new t.NavigationControl());
+  });
+</script>
+
+<main>
+  <div class="map md:w-96 md:h-80 h-64 w-full" bind:this={mapElement} />
+</main>

@@ -28,6 +28,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@tomtom-international/web-sdk-maps": "^6.23.0",
 		"heroicons-svelte": "^2.0.0",
 		"openai": "^3.3.0",
 		"svelte-youtube": "^0.0.2",

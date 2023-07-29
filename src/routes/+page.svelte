@@ -6,6 +6,8 @@
   import Youtube from "svelte-youtube-embed";
 
   import { tomcruise } from "$lib/dummy-data";
+  import MapComponent from "$lib/components/MapComponent.svelte";
+  import ModalContentComponent from "$lib/components/ModalContentComponent.svelte";
 
   let TUBE_API_KEY = "AIzaSyCSis_YjZDjyGgNvXSZPaYiZ-3oZ165SNo";
   let term = "";
@@ -22,6 +24,7 @@
   let idVid: string;
   let trans_example = "";
   let asideLabel = "";
+  let modalView = "";
 
   const dummyText = tomcruise;
   $: str = dummyText.split("");
@@ -37,20 +40,26 @@
     }, 100);
   }
 
-  function resolveAfter20Seconds() {
+  function resolveAfter5Seconds() {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(trans_example);
-      }, 7000);
+      }, 5000);
     });
   }
 
   async function asyncCall() {
-    asideLabel = "Getting summary...";
-    await resolveAfter20Seconds();
+    asideLabel = "Tap the Bot..";
+    summary = !summary;
     asideLabel = "Summary";
+    await resolveAfter5Seconds();
     typer();
   }
+
+  const handleDummyTextDisplay = () => {
+    summary = false;
+    trans_example = "";
+  };
 
   const handleVideoLaunch = (v: string) => {
     idVid = v;
@@ -61,6 +70,15 @@
   const handleMapLaunch = () => {
     showMapModal = true;
     showModal = true;
+  };
+
+  const handleModalAction = (value: string, v = "") => {
+    showModal = true;
+    if (value === "video") {
+      modalView = "video";
+    } else {
+      modalView = "map";
+    }
   };
 
   const getData = async () => {
@@ -166,71 +184,7 @@
 </div>
 
 <Modal bind:showModal>
-  <!-- <h2 slot="header">Video of selection</h2> -->
-  <div class="grid grid-cols-1 h-full w-full md:grid-cols-3 md:h-full gap-3">
-    {#if !showMapModal}
-      <aside
-        class="bg-orange-400 h-64 w-full rounded-md items-center justify-center md:h-full overflow-y-auto"
-      >
-        <!-- <button
-          on:click={() => (summary = !summary)}
-          class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >Show summary</button> -->
-        <!-- svelte-ignore a11y-interactive-supports-focus -->
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <button
-          on:click={() => (summary = !summary)}
-          class="animate-bounce w-6 h-6 md:w-8 md:h-8">🤖</button
-        >
-        {#if summary}
-          <div
-            class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto"
-          >
-            {#if trans_example === ""}
-              <h2 class="text-slate-600 text-lg font-semibold mt-1">
-                {asideLabel}
-              </h2>
-              <div class="animate-pulse flex space-x-4">
-                <!-- <div class="rounded-full bg-slate-700 h-10 w-10" /> -->
-                <div class="flex-1 space-y-6 py-1">
-                  <div class="h-2 bg-slate-600 rounded" />
-                  <div class="space-y-3">
-                    <div class="grid grid-cols-3 gap-4">
-                      <div class="h-2 bg-slate-600 rounded col-span-2" />
-                      <div class="h-2 bg-slate-600 rounded col-span-1" />
-                    </div>
-                    <div class="h-2 bg-slate-600 rounded" />
-                  </div>
-                </div>
-              </div>
-            {:else}
-              <div class="flex flex-col items-center justify-center p-8">
-                <h2 class="text-slate-600 text-lg font-semibold mt-1">
-                  {asideLabel}
-                </h2>
-
-                <p>
-                  {trans_example}
-                </p>
-              </div>
-            {/if}
-          </div>
-        {/if}
-      </aside>
-      <div class="md:col-span-2 md:w-full h-full rounded-md bg-slate-400">
-        <Youtube id={idVid} altThumb={true} />
-      </div>
-    {:else}
-      <aside
-        class="bg-orange-300 h-52 w-full rounded-md items-center justify-center md:h-full overflow-y-auto"
-      >
-        <button>Video metadata</button>
-      </aside>
-      <div class="md:col-span-2 md:w-full h-64 w-full rounded-md bg-orange-600">
-        TomTom Map
-      </div>
-    {/if}
-  </div>
+  <ModalContentComponent view={modalView} vidId={idVid} />
 </Modal>
 
 {#if data}
@@ -250,7 +204,10 @@
         <div
           class="overflow-hidden shadow-md hover:shadow-lg relative rounded-md h-full flex-col flex justify-center"
         >
-          <button class="z-30" on:click={handleMapLaunch}>
+          <button
+            class="z-30 md:pt-6"
+            on:click={() => handleModalAction("map")}
+          >
             <span class="relative flex w-6 h-6">
               <span
                 class="animate-ping absolute bottom-0 right-0 inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"
@@ -277,7 +234,8 @@
               </svg>
             </span>
           </button>
-          <a href="#" on:click={() => handleVideoLaunch(item.id.videoId)}>
+          <!-- <a href="#" on:click={() => handleVideoLaunch(item.id.videoId)}> -->
+          <a href="#" on:click={() => handleModalAction("video")}>
             <img
               src={item.snippet.thumbnails.high.url}
               alt=""
