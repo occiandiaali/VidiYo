@@ -15,8 +15,9 @@ I also intend to utilize Tom-Tom maps for geo-placement information about the vi
 The demo is utilizing dummy-data, due to personal challenges with OpenAI, for (basically) proof-of-concept purposes.  
 
 ## Demo  
-[vidiyo-cruise.webm](https://github.com/occiandiaali/VidiYos/assets/40769994/9ee9a26e-7716-433a-aac8-a17cad44a8cb)  
-   
+[vidiyo-cruise.webm](https://github.com/occiandiaali/VidiYos/assets/40769994/9ee9a26e-7716-433a-aac8-a17cad44a8cb)   
+
+[vidiyo-ai-simul.webm](https://github.com/occiandiaali/VidiYo/assets/40769994/8cc426dc-d734-409d-ba78-5f8ad3c3d219)
 
 [sm-vidiyo.webm](https://github.com/occiandiaali/VidiYo/assets/40769994/6f000aaf-ea7f-41f2-b19b-e771e680f02a)
 
